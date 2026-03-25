@@ -1,0 +1,273 @@
+@import "tailwindcss";
+
+@theme {
+	--color-bg: #0c0a09;
+	--color-surface: #1c1917;
+	--color-surface-hover: #292524;
+	--color-border: rgba(231, 229, 228, 0.08);
+	--color-border-hover: rgba(231, 229, 228, 0.14);
+	--color-text: #fafaf9;
+	--color-text-secondary: #d6d3d1;
+	--color-text-muted: #78716c;
+	--color-primary: #e7e5e4;
+	--color-primary-hover: #fafaf9;
+	--color-accent-green: #22c55e;
+	--color-accent-red: #ef4444;
+	--color-accent-yellow: #eab308;
+}
+
+@layer base {
+	html {
+		scroll-behavior: smooth;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+		background-color: #0c0a09;
+	}
+
+	body {
+		font-family: 'Inter', system-ui, -apple-system, sans-serif;
+		font-optical-sizing: auto;
+		font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+	}
+
+	h1, h2, h3, h4, h5, h6 {
+		letter-spacing: -0.02em;
+	}
+
+	::selection {
+		background: rgba(231, 229, 228, 0.2);
+		color: #fafaf9;
+	}
+}
+
+@layer utilities {
+	.scrollbar-hide {
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+	}
+	.scrollbar-hide::-webkit-scrollbar {
+		display: none;
+	}
+
+	/* ─── 3-Layer Button System ─── */
+	/* Layer 1: Base    — the <button> itself (bg, shadow, color)
+	   Layer 2: .btn-stroke — gradient border via mask-composite trick
+	   Layer 3: .btn-highlight — inset top-edge shine */
+
+	/* ── Light variant (Play, primary CTA) ── */
+	.btn-light {
+		position: relative;
+		overflow: hidden;
+		background: rgba(227, 227, 227, 0.8);
+		color: #0f172a;
+		border: none;
+		border-radius: 12px;
+		font-weight: 500;
+		letter-spacing: -0.27px;
+		box-shadow:
+			0 2px 4px rgba(0, 0, 0, 0.10),
+			0 0 0 1px rgba(0, 0, 0, 0.16);
+		transition: transform 350ms cubic-bezier(0.32, 0.72, 0, 1.05),
+		            filter 200ms ease;
+		cursor: pointer;
+	}
+	.btn-light:hover {
+		filter: brightness(0.95);
+	}
+	.btn-light:active {
+		transform: scale(0.96);
+	}
+
+	/* ── Dark variant (secondary, ghost-like) ── */
+	.btn-dark {
+		position: relative;
+		overflow: hidden;
+		background: linear-gradient(180deg, #201E25 0%, #323137 100%);
+		color: #fff1e1;
+		border: none;
+		border-radius: 12px;
+		font-weight: 500;
+		letter-spacing: -0.27px;
+		box-shadow:
+			0 2px 4px rgba(0, 0, 0, 0.1),
+			0 0 0 1px rgba(13, 13, 13, 1);
+		transition: transform 350ms cubic-bezier(0.32, 0.72, 0, 1.05),
+		            filter 200ms ease;
+		cursor: pointer;
+	}
+	.btn-dark:hover {
+		filter: brightness(1.12);
+	}
+	.btn-dark:active {
+		transform: scale(0.96);
+	}
+
+	/* ── Layer 2: Stroke gradient overlay ── */
+	.btn-stroke {
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		border: 1px solid transparent;
+		background-origin: border-box;
+		background-clip: border-box;
+		pointer-events: none;
+		-webkit-mask:
+			linear-gradient(#fff 0 0) padding-box,
+			linear-gradient(#fff 0 0) border-box;
+		-webkit-mask-composite: xor;
+		mask:
+			linear-gradient(#fff 0 0) padding-box,
+			linear-gradient(#fff 0 0) border-box;
+		mask-composite: exclude;
+	}
+	.btn-light .btn-stroke {
+		background-image: linear-gradient(180deg, rgba(253, 253, 253, 1) 0%, rgba(253, 253, 253, 0.2) 50%, transparent 100%);
+	}
+	.btn-dark .btn-stroke {
+		background-image: linear-gradient(180deg, #4B4951 0%, rgba(75, 73, 81, 0.2) 50%, transparent 100%);
+	}
+
+	/* ── Layer 3: Top highlight shine ── */
+	.btn-highlight {
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		pointer-events: none;
+	}
+	.btn-light .btn-highlight {
+		box-shadow: inset 0px 1.5px 0px 0px rgba(255, 255, 255, 0.55);
+	}
+	.btn-dark .btn-highlight {
+		box-shadow: inset 0px 1.5px 0px 0px rgba(255, 255, 255, 0.08);
+	}
+
+	/* ── Pill shape modifier ── */
+	.btn-pill {
+		border-radius: 9999px;
+	}
+
+	/* ── Legacy aliases (keep existing markup working) ── */
+	.btn-accent { /* maps to light */
+		position: relative;
+		overflow: hidden;
+		background: rgba(227, 227, 227, 0.8);
+		color: #0f172a;
+		border: none;
+		border-radius: 12px;
+		padding: 12px 16px;
+		font-size: 14px;
+		line-height: 15px;
+		font-weight: 500;
+		letter-spacing: -0.27px;
+		box-shadow:
+			0 2px 4px rgba(0, 0, 0, 0.10),
+			0 0 0 1px rgba(0, 0, 0, 0.16);
+		transition: transform 350ms cubic-bezier(0.32, 0.72, 0, 1.05),
+		            filter 200ms ease;
+		cursor: pointer;
+	}
+	.btn-accent:hover { filter: brightness(0.95); }
+	.btn-accent:active { transform: scale(0.96); }
+
+	.btn-primary { /* maps to dark */
+		position: relative;
+		overflow: hidden;
+		background: linear-gradient(180deg, #201E25 0%, #323137 100%);
+		color: #fff1e1;
+		border: none;
+		border-radius: 12px;
+		padding: 12px 16px;
+		font-size: 14px;
+		line-height: 15px;
+		font-weight: 500;
+		letter-spacing: -0.27px;
+		box-shadow:
+			0 2px 4px rgba(0, 0, 0, 0.1),
+			0 0 0 1px rgba(13, 13, 13, 1);
+		transition: transform 350ms cubic-bezier(0.32, 0.72, 0, 1.05),
+		            filter 200ms ease;
+		cursor: pointer;
+	}
+	.btn-primary:hover { filter: brightness(1.12); }
+	.btn-primary:active { transform: scale(0.96); }
+
+	.card-shadow {
+		box-shadow:
+			0 4px 8px 0 rgba(255, 255, 255, 0.03) inset,
+			0 0.5px 0.5px 0 rgba(255, 255, 255, 0.06) inset,
+			0 0.25px 0.25px 0 rgba(255, 255, 255, 0.12) inset,
+			0 4px 8px -2px rgba(0, 0, 0, 0.32),
+			0 2px 4px -1px rgba(0, 0, 0, 0.4);
+	}
+
+	.glass {
+		background: rgba(12, 10, 9, 0.6);
+		backdrop-filter: blur(16px);
+		-webkit-backdrop-filter: blur(16px);
+		border: 1px solid rgba(231, 229, 228, 0.08);
+		box-shadow:
+			0px 1px 3px rgba(0, 0, 0, 0.3),
+			inset 0 1px 0 rgba(255, 255, 255, 0.04),
+			inset 0 -1px 2px rgba(0, 0, 0, 0.2);
+	}
+
+	.glass-deep {
+		background: rgba(20, 18, 16, 0.95);
+		backdrop-filter: blur(40px) saturate(1.4);
+		-webkit-backdrop-filter: blur(40px) saturate(1.4);
+		border: 1px solid rgba(231, 229, 228, 0.1);
+		box-shadow:
+			0 24px 48px rgba(0, 0, 0, 0.5),
+			0 8px 16px rgba(0, 0, 0, 0.3),
+			inset 0 1px 0 rgba(255, 255, 255, 0.06),
+			inset 0 -1px 0 rgba(0, 0, 0, 0.4);
+	}
+
+	.avatar-ring {
+		box-shadow:
+			0 0 0 2px rgba(0, 0, 0, 0.3),
+			0 0 0 3px rgba(231, 229, 228, 0.15),
+			0 4px 12px rgba(0, 0, 0, 0.4);
+	}
+
+	.avatar-ring:hover {
+		box-shadow:
+			0 0 0 2px rgba(0, 0, 0, 0.3),
+			0 0 0 3px rgba(231, 229, 228, 0.3),
+			0 4px 16px rgba(0, 0, 0, 0.5);
+	}
+
+	/* ─── Shimmer loading effect ─── */
+	.shimmer {
+		position: relative;
+		overflow: hidden;
+	}
+	.shimmer::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.04), transparent);
+		background-size: 200% 100%;
+		animation: shimmer 1.8s ease-in-out infinite;
+	}
+	@keyframes shimmer {
+		from { background-position: 200% 0; }
+		to { background-position: -200% 0; }
+	}
+
+	/* ─── Card stagger fade-in ─── */
+	.card-fade-in {
+		opacity: 0;
+		animation: cardFadeIn 0.4s ease-out forwards;
+	}
+	@keyframes cardFadeIn {
+		from { opacity: 0; transform: translateY(8px); }
+		to { opacity: 1; transform: translateY(0); }
+	}
+}
+
+/* ─── View Transition API ─── */
+@keyframes fade-in { from { opacity: 0; } }
+@keyframes fade-out { to { opacity: 0; } }
+::view-transition-old(root) { animation: fade-out 0.15s ease-out; }
+::view-transition-new(root) { animation: fade-in 0.2s ease-in; }
