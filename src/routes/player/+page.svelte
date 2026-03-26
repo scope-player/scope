@@ -200,7 +200,7 @@
 	function goBack() { history.back(); }
 	function startStallTimer() {
 		if (stallTimer) clearTimeout(stallTimer);
-		stallTimer = setTimeout(() => { if (!hasPlayed) stalled = true; }, 10000);
+		stallTimer = setTimeout(() => { if (!hasPlayed) stalled = true; }, 45000);
 	}
 	function clearStallTimer() {
 		if (stallTimer) { clearTimeout(stallTimer); stallTimer = null; }
