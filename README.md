@@ -23,6 +23,10 @@
 
 ---
 
+<p align="center">
+  <img src="static/scope.png" width="100%" alt="Scope preview" />
+</p>
+
 ## What is Scope?
 
 Scope is a third-party web client that connects to the [Stremio](https://www.stremio.com/) addon ecosystem. It provides a polished, cinematic interface for browsing catalogs, discovering content, managing your library, and streaming — all powered by the open Stremio addon protocol.
