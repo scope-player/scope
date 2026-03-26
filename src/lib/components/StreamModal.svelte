@@ -6,6 +6,7 @@
 		getStreams,
 		getSubtitles,
 		getServerStreamUrl,
+		resolvePlayableUrl,
 		serverHeartbeat,
 		type StremioMeta,
 		type StremioStream,
@@ -185,8 +186,10 @@
 
 		if (stream.infoHash) {
 			if (!serverAvailable) return;
-			url = getServerStreamUrl(stream.infoHash, stream.fileIdx ?? 0);
-			sType = 'direct';
+			const directUrl = getServerStreamUrl(stream.infoHash, stream.fileIdx ?? 0);
+			const resolved = await resolvePlayableUrl(directUrl);
+			url = resolved.url;
+			sType = resolved.type;
 		} else if (stream.url) {
 			url = stream.url;
 			sType = stream.url.includes('.m3u8') ? 'hls' : 'direct';

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { getStreams, getSubtitles, getServerStreamUrl, serverHeartbeat, type StremioMeta, type StremioStream } from '$lib/api/stremio';
+	import { getStreams, getSubtitles, getServerStreamUrl, resolvePlayableUrl, serverHeartbeat, type StremioMeta, type StremioStream } from '$lib/api/stremio';
 	import { getAuthKey } from '$lib/stores/auth.svelte';
 	import { addToLibrary, removeFromLibrary, getLibraryStore } from '$lib/stores/library.svelte';
 	import { getStreamAddons, getSubtitleAddons } from '$lib/stores/addons.svelte';
@@ -107,8 +107,10 @@
 			let url: string;
 			let sType: StreamType;
 			if (pick.infoHash) {
-				url = getServerStreamUrl(pick.infoHash, pick.fileIdx ?? 0);
-				sType = 'direct';
+				const directUrl = getServerStreamUrl(pick.infoHash, pick.fileIdx ?? 0);
+				const resolved = await resolvePlayableUrl(directUrl);
+				url = resolved.url;
+				sType = resolved.type;
 			} else if (pick.url) {
 				url = pick.url;
 				sType = pick.url.includes('.m3u8') ? 'hls' : 'direct';

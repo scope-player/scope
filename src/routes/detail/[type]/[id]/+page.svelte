@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { getMeta, getCatalog, getStreams, getSubtitles, getServerStreamUrl, serverHeartbeat, type StremioMeta, type StremioVideo, type StremioStream } from '$lib/api/stremio';
+	import { getMeta, getCatalog, getStreams, getSubtitles, getServerStreamUrl, resolvePlayableUrl, serverHeartbeat, type StremioMeta, type StremioVideo, type StremioStream } from '$lib/api/stremio';
 	import { getAuth, getAuthKey } from '$lib/stores/auth.svelte';
 	import { addToLibrary, removeFromLibrary, getLibraryStore } from '$lib/stores/library.svelte';
 	import { getStreamAddons, getSubtitleAddons } from '$lib/stores/addons.svelte';
@@ -126,7 +126,7 @@
 			if (!pick) pick = pickBestStream(allStreams, online);
 			if (!pick) { toast.error('No streams available'); autoPlaying = false; return; }
 			let url: string; let sType: StreamType;
-			if (pick.infoHash) { url = getServerStreamUrl(pick.infoHash, pick.fileIdx ?? 0); sType = 'direct'; }
+			if (pick.infoHash) { const d = getServerStreamUrl(pick.infoHash, pick.fileIdx ?? 0); const r = await resolvePlayableUrl(d); url = r.url; sType = r.type; }
 			else if (pick.url) { url = pick.url; sType = pick.url.includes('.m3u8') ? 'hls' : 'direct'; }
 			else { autoPlaying = false; return; }
 			setStream(url, sType, meta, videoId, pick, allSubs); goto('/player');

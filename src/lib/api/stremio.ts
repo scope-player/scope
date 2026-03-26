@@ -190,6 +190,43 @@ export function getServerHlsUrl(infoHash: string, fileIdx: number): string {
 	return `${getServerUrl()}/hlsv2/${infoHash}/${fileIdx}/master.m3u8`;
 }
 
+/** Build a playable URL — always uses HLS transcoding for torrent streams to guarantee audio compatibility */
+export async function resolvePlayableUrl(directUrl: string): Promise<{ url: string; type: 'direct' | 'hls' }> {
+	const server = getServerUrl();
+
+	// Always transcode through HLS — guarantees audio works (AAC stereo)
+	const id = Math.random().toString(36).slice(2, 10);
+	const params = new URLSearchParams();
+	params.set('mediaURL', directUrl);
+	params.append('videoCodecs', 'h264');
+	params.append('videoCodecs', 'h265');
+	params.append('videoCodecs', 'vp9');
+	params.append('audioCodecs', 'aac');
+	params.append('audioCodecs', 'mp3');
+	params.set('maxAudioChannels', '2');
+
+	const hlsUrl = `${server}/hlsv2/${id}/master.m3u8?${params.toString()}`;
+
+	// Verify the HLS URL is reachable before committing
+	try {
+		const res = await fetch(hlsUrl, { method: 'HEAD' });
+		if (res.ok || res.status === 200 || res.status === 302) {
+			return { url: hlsUrl, type: 'hls' };
+		}
+	} catch {}
+
+	// Also try GET (some servers don't support HEAD)
+	try {
+		const res = await fetch(hlsUrl);
+		if (res.ok) {
+			return { url: hlsUrl, type: 'hls' };
+		}
+	} catch {}
+
+	// Fallback to direct if HLS completely fails
+	return { url: directUrl, type: 'direct' };
+}
+
 export async function getTorrentStats(infoHash: string): Promise<any> {
 	return fetchJson(`${getServerUrl()}/${infoHash}/stats.json`);
 }

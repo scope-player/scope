@@ -6,7 +6,7 @@
 	import { getAuthKey } from '$lib/stores/auth.svelte';
 	import { updateWatchProgress, getLibraryStore } from '$lib/stores/library.svelte';
 	import { getStreamAddons, getSubtitleAddons } from '$lib/stores/addons.svelte';
-	import { getStreams, getSubtitles, getServerStreamUrl, serverHeartbeat, type StremioStream } from '$lib/api/stremio';
+	import { getStreams, getSubtitles, getServerStreamUrl, resolvePlayableUrl, serverHeartbeat, type StremioStream } from '$lib/api/stremio';
 	import { pickBestStream } from '$lib/api/smartSelect';
 	import { isHLSProvider, type MediaProviderChangeEvent } from 'vidstack';
 	import type { MediaPlayerElement } from 'vidstack/elements';
@@ -155,7 +155,7 @@
 
 			let url: string;
 			let sType: StreamType;
-			if (pick.infoHash) { url = getServerStreamUrl(pick.infoHash, pick.fileIdx ?? 0); sType = 'direct'; }
+			if (pick.infoHash) { const d = getServerStreamUrl(pick.infoHash, pick.fileIdx ?? 0); const r = await resolvePlayableUrl(d); url = r.url; sType = r.type; }
 			else if (pick.url) { url = pick.url; sType = pick.url.includes('.m3u8') ? 'hls' : 'direct'; }
 			else { playingNextEpisode = false; return; }
 
@@ -200,7 +200,7 @@
 	function goBack() { history.back(); }
 	function startStallTimer() {
 		if (stallTimer) clearTimeout(stallTimer);
-		stallTimer = setTimeout(() => { if (!hasPlayed) stalled = true; }, 45000);
+		stallTimer = setTimeout(() => { if (!hasPlayed) stalled = true; }, 10000);
 	}
 	function clearStallTimer() {
 		if (stallTimer) { clearTimeout(stallTimer); stallTimer = null; }
