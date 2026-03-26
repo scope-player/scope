@@ -33,6 +33,16 @@ Scope is a third-party web client that connects to the [Stremio](https://www.str
 
 **Scope is not affiliated with Stremio.** It's an independent client that speaks the same protocol.
 
+## Why Scope?
+
+The official Stremio apps work, but they haven't kept up with modern UI standards. Scope exists because we wanted something that **looks and feels like Apple TV or Netflix** while still using the same open addon ecosystem.
+
+- **Better UI** — cinematic, polished interface that feels like it belongs in 2026
+- **Smart playback** — auto-selects the best source, remembers your choice, resumes where you left off
+- **Multi-user** — one streaming server, multiple clients, each with their own account, library, and watch history
+- **Web-native** — runs in any browser, no install required, deploys anywhere
+- **Fully compatible** — same addons, same library, same account, syncs with the official apps
+
 ## Features
 
 **Browse & Discover**
