@@ -28,6 +28,30 @@
 		font-family: 'Inter', system-ui, -apple-system, sans-serif;
 		font-optical-sizing: auto;
 		font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+		-webkit-tap-highlight-color: transparent;
+		overscroll-behavior: none;
+	}
+
+	/* Native-feel on mobile — no text selection except inputs */
+	@media (max-width: 768px) {
+		body {
+			-webkit-user-select: none;
+			user-select: none;
+		}
+		input, textarea {
+			-webkit-user-select: text;
+			user-select: text;
+		}
+	}
+
+	/* Safe areas for PWA standalone mode */
+	@supports (padding-top: env(safe-area-inset-top)) {
+		body {
+			padding-top: env(safe-area-inset-top);
+			padding-bottom: env(safe-area-inset-bottom);
+			padding-left: env(safe-area-inset-left);
+			padding-right: env(safe-area-inset-right);
+		}
 	}
 
 	h1, h2, h3, h4, h5, h6 {
