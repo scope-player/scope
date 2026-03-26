@@ -134,9 +134,9 @@
 			{#if step === 0}
 				<!-- ═══ WELCOME ═══ -->
 				<div class="relative">
-					<!-- Poster wall background -->
-					{#if posters.length > 0}
-						<div class="poster-wrapper">
+					<!-- Poster wall background (always reserves space) -->
+					<div class="poster-wrapper">
+						{#if posters.length > 0}
 							<div class="poster-wall">
 								{#each Array(6) as _, col}
 									<div class="poster-col {col % 2 === 0 ? 'poster-col-up' : 'poster-col-down'}">
@@ -148,10 +148,10 @@
 									</div>
 								{/each}
 							</div>
-							<div class="poster-fade-top"></div>
-							<div class="poster-fade-bottom"></div>
-						</div>
-					{/if}
+						{/if}
+						<div class="poster-fade-top"></div>
+						<div class="poster-fade-bottom"></div>
+					</div>
 
 					<div class="relative z-10 flex flex-col items-center pt-16 pb-8">
 						<svg width="48" height="48" viewBox="0 0 100 100" fill="none" class="mb-6">
@@ -307,13 +307,13 @@
 		height: 370px;
 		overflow: hidden;
 		margin-bottom: -40px;
-		opacity: 0;
-		animation: wallFadeIn 1.2s ease-out 0.2s forwards;
 	}
 	.poster-wall {
 		display: flex;
 		gap: 6px;
 		height: 100%;
+		opacity: 0;
+		animation: wallFadeIn 1.2s ease-out 0.2s forwards;
 	}
 	@keyframes wallFadeIn {
 		from { opacity: 0; }
