@@ -97,8 +97,8 @@
 	{#if continueWatching.length > 0}
 		<section class="space-y-3">
 			<h2 class="text-lg font-medium tracking-tight text-stone-200">Continue Watching</h2>
-			<div class="relative -m-3">
-				<div class="flex gap-4 overflow-x-auto scroll-smooth p-3 scrollbar-hide" style="-webkit-mask-image: linear-gradient(to right, black calc(100% - 48px), transparent); mask-image: linear-gradient(to right, black calc(100% - 48px), transparent);">
+			<div class="relative -m-4">
+				<div class="flex gap-4 overflow-x-auto scroll-smooth p-4 scrollbar-hide" style="-webkit-mask-image: linear-gradient(to right, black calc(100% - 48px), transparent); mask-image: linear-gradient(to right, black calc(100% - 48px), transparent);">
 					{#each continueWatching as item (item._id)}
 						<button
 							onclick={() => handleContinueWatching(item)}

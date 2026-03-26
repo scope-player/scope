@@ -310,6 +310,10 @@
 								<p class="text-sm text-text">Scope</p>
 							</div>
 							<div class="setting-row">
+								<p class="setting-label">Version</p>
+								<p class="text-sm text-text-secondary">0.1.0-alpha</p>
+							</div>
+							<div class="setting-row">
 								<p class="setting-label">Built with</p>
 								<p class="text-sm text-text-secondary">SvelteKit + Tailwind + Vidstack</p>
 							</div>

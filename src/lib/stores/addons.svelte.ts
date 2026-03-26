@@ -1,4 +1,5 @@
 import { getInstalledAddons, getManifest, type AddonManifest } from '$lib/api/stremio';
+import { toast } from 'svelte-sonner';
 
 export interface InstalledAddon {
 	manifest: AddonManifest;
@@ -58,6 +59,7 @@ export async function loadAddons(authKey: string = '') {
 			loaded = true;
 			saveToStorage();
 		} catch {
+			toast.error('Failed to load addons');
 			addons = [];
 		}
 	}
@@ -71,7 +73,9 @@ export async function refreshAddons(authKey: string = '') {
 		addons = res.addons || [];
 		loaded = true;
 		saveToStorage();
-	} catch {}
+	} catch {
+		toast.error('Failed to refresh addons');
+	}
 	loading = false;
 }
 

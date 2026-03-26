@@ -101,8 +101,12 @@
 	async function handleToggleLibrary() {
 		if (!meta) return;
 		const key = getAuthKey();
-		if (inLibrary) await removeFromLibrary(key || '', meta.id);
-		else await addToLibrary(key || '', meta);
+		try {
+			if (inLibrary) await removeFromLibrary(key || '', meta.id);
+			else await addToLibrary(key || '', meta);
+		} catch {
+			toast.error('Failed to update library');
+		}
 	}
 
 	async function autoPlay(videoId: string) {

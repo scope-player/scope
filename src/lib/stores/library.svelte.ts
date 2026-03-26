@@ -1,4 +1,5 @@
 import { getLibrary as fetchLibrary, getLibraryMeta } from '$lib/api/stremio';
+import { toast } from 'svelte-sonner';
 
 export interface LibraryItem {
 	_id: string;
@@ -82,6 +83,7 @@ export async function loadLibrary(authKey: string) {
 		loading = false;
 	} catch (e: any) {
 		console.error('Library sync failed:', e);
+		toast.error('Library sync failed');
 		loaded = true;
 		loading = false;
 		items = [];
@@ -137,15 +139,20 @@ export async function addToLibrary(authKey: string, meta: any) {
 
 	// Persist
 	if (authKey) {
-		await fetch('https://api.strem.io/api/datastorePut', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({
-				authKey,
-				collection: 'libraryItem',
-				changes: [item],
-			}),
-		});
+		try {
+			const res = await fetch('https://api.strem.io/api/datastorePut', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					authKey,
+					collection: 'libraryItem',
+					changes: [item],
+				}),
+			});
+			if (!res.ok) throw new Error();
+		} catch {
+			toast.error('Failed to sync library — item added locally only');
+		}
 	}
 }
 
@@ -158,6 +165,7 @@ export async function updateWatchProgress(
 ) {
 	const id = meta.id || meta._id;
 	const existing = items.find(i => i._id === id);
+	const isFinished = duration > 0 && timeOffset / duration > 0.95;
 
 	// Parse season/episode from videoId (format: tt1234567:1:3)
 	let season: number | undefined;
@@ -166,6 +174,32 @@ export async function updateWatchProgress(
 	if (parts.length >= 3) {
 		season = parseInt(parts[1], 10);
 		episode = parseInt(parts[2], 10);
+	}
+
+	// For series: if episode is finished, advance to next episode
+	let finalVideoId = videoId;
+	let finalSeason = season;
+	let finalEpisode = episode;
+	let finalTimeOffset = Math.floor(timeOffset);
+	let finalDuration = Math.floor(duration);
+
+	if (isFinished && meta.type === 'series' && meta.videos?.length && season != null && episode != null) {
+		const sorted = [...meta.videos]
+			.filter((v: any) => v.season != null && (v.episode != null || v.number != null))
+			.sort((a: any, b: any) => {
+				if (a.season !== b.season) return a.season - b.season;
+				return (a.episode || a.number || 0) - (b.episode || b.number || 0);
+			});
+
+		const curIdx = sorted.findIndex((v: any) => v.season === season && (v.episode || v.number) === episode);
+		if (curIdx !== -1 && curIdx < sorted.length - 1) {
+			const next = sorted[curIdx + 1];
+			finalVideoId = next.id;
+			finalSeason = next.season;
+			finalEpisode = next.episode || next.number;
+			finalTimeOffset = 1; // >0 so it shows in continue watching
+			finalDuration = 0; // unknown until they start it — skips the 95% filter
+		}
 	}
 
 	const now = new Date().toISOString();
@@ -184,14 +218,14 @@ export async function updateWatchProgress(
 		state: {
 			lastWatched: now,
 			timeWatched: prevTimeWatched + timeDelta,
-			timeOffset: Math.floor(timeOffset),
+			timeOffset: finalTimeOffset,
 			overallTimeWatched: prevOverall + timeDelta,
-			timesWatched: existing?.state?.timesWatched || 0,
-			duration: Math.floor(duration),
-			video_id: videoId,
-			season,
-			episode,
-			flaggedWatched: duration > 0 && timeOffset / duration > 0.95 ? 1 : (existing?.state?.flaggedWatched || 0),
+			timesWatched: (existing?.state?.timesWatched || 0) + (isFinished ? 1 : 0),
+			duration: finalDuration,
+			video_id: finalVideoId,
+			season: finalSeason,
+			episode: finalEpisode,
+			flaggedWatched: isFinished && !finalSeason ? 1 : (existing?.state?.flaggedWatched || 0),
 		},
 		removed: false,
 		temp: false,
@@ -205,7 +239,7 @@ export async function updateWatchProgress(
 	// Persist to cloud
 	if (authKey) {
 		try {
-			await fetch('https://api.strem.io/api/datastorePut', {
+			const res = await fetch('https://api.strem.io/api/datastorePut', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
@@ -214,7 +248,10 @@ export async function updateWatchProgress(
 					changes: [item],
 				}),
 			});
-		} catch {}
+			if (!res.ok) throw new Error();
+		} catch {
+			toast.error('Failed to save watch progress to cloud');
+		}
 	}
 }
 
@@ -225,14 +262,19 @@ export async function removeFromLibrary(authKey: string, itemId: string) {
 	items = items.filter(i => i._id !== itemId);
 
 	if (authKey) {
-		await fetch('https://api.strem.io/api/datastorePut', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({
-				authKey,
-				collection: 'libraryItem',
-				changes: [{ ...existing, removed: true, _mtime: new Date().toISOString() }],
-			}),
-		});
+		try {
+			const res = await fetch('https://api.strem.io/api/datastorePut', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					authKey,
+					collection: 'libraryItem',
+					changes: [{ ...existing, removed: true, _mtime: new Date().toISOString() }],
+				}),
+			});
+			if (!res.ok) throw new Error();
+		} catch {
+			toast.error('Failed to sync removal to cloud');
+		}
 	}
 }

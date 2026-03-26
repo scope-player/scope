@@ -25,10 +25,14 @@
 
 	async function handleToggleLibrary() {
 		const key = getAuthKey();
-		if (inLibrary) {
-			await removeFromLibrary(key || '', item.id);
-		} else {
-			await addToLibrary(key || '', item);
+		try {
+			if (inLibrary) {
+				await removeFromLibrary(key || '', item.id);
+			} else {
+				await addToLibrary(key || '', item);
+			}
+		} catch {
+			toast.error('Failed to update library');
 		}
 	}
 

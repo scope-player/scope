@@ -12,6 +12,7 @@
 		type StremioSubtitle,
 	} from '$lib/api/stremio';
 	import { setStream, getLastStreamChoice, type StreamType } from '$lib/stores/player.svelte';
+	import { toast } from 'svelte-sonner';
 
 	interface Props {
 		type: string;
@@ -87,9 +88,12 @@
 		]);
 
 		const collected: AddonStreams[] = [];
+		let streamErrors = 0;
 		for (const result of streamResults) {
 			if (result.status === 'fulfilled' && result.value.streams?.length) {
 				collected.push(result.value);
+			} else if (result.status === 'rejected') {
+				streamErrors++;
 			}
 		}
 
@@ -98,6 +102,12 @@
 			if (result.status === 'fulfilled') {
 				allSubs.push(...result.value);
 			}
+		}
+
+		if (streamErrors > 0 && collected.length === 0) {
+			toast.error('All stream sources failed to respond');
+		} else if (streamErrors > 0) {
+			toast.warning(`${streamErrors} addon${streamErrors > 1 ? 's' : ''} failed to respond`);
 		}
 
 		results = collected;

@@ -15,7 +15,7 @@
 	{onclick}
 	class="group flex w-full flex-col gap-2 text-left"
 >
-	<div class="card-shadow relative aspect-[2/3] w-full overflow-hidden rounded-xl border border-border bg-surface transition-all duration-300 ease-out group-hover:scale-[1.03] group-hover:-translate-y-1 group-hover:border-[rgba(231,229,228,0.10)] group-active:scale-[0.98]">
+	<div class="card-shadow relative aspect-[2/3] w-full overflow-hidden rounded-xl border border-border bg-surface transition-all duration-300 ease-out group-hover:-translate-y-1.5 group-hover:border-[rgba(231,229,228,0.12)] group-hover:shadow-lg group-active:translate-y-0">
 		{#if item.poster}
 			{#if !loaded}
 				<div class="absolute inset-0 shimmer bg-surface-hover"></div>

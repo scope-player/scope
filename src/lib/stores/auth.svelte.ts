@@ -1,4 +1,5 @@
 import { stremioLogin, stremioGetUser } from '$lib/api/stremio';
+import { toast } from 'svelte-sonner';
 
 interface StremioUser {
 	_id: string;
@@ -47,7 +48,9 @@ export function initAuth() {
 		stremioGetUser(authKey).then((u: any) => {
 			user = u;
 			saveToStorage();
-		}).catch(() => {});
+		}).catch(() => {
+			toast.error('Failed to refresh account info');
+		});
 	}
 }
 
