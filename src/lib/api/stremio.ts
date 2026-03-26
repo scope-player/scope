@@ -196,8 +196,8 @@ export async function getTorrentStats(infoHash: string): Promise<any> {
 
 export async function serverHeartbeat(): Promise<boolean> {
 	try {
-		await fetchJson(`${getServerUrl()}/heartbeat`);
-		return true;
+		const res = await fetch(`${getServerUrl()}/heartbeat`, { redirect: 'follow' });
+		return res.ok;
 	} catch {
 		return false;
 	}
